@@ -1,4 +1,4 @@
-// 전체 질문 풀세트 데이터 보존
+// 진단평가 원본 문항 데이터 세트
 const allQuestions = [
     {
         question: "다음 대화의 빈칸에 알맞은 단어는?\n\nA: How ______ is this apple?\nB: It's one dollar.",
@@ -62,15 +62,15 @@ const allQuestions = [
     }
 ];
 
-// 퀴즈 제어 상태 변수들
+// 상태 제어 변수
 let activeQuestions = []; 
 let currentQuestionIndex = 0;
 let score = 0;
 let userAnswers = []; 
 let isWrongOnlyMode = false;
-let wrongIndexes = []; // 원본 풀세트 중 '어떤 인덱스의 문제를 틀렸었는지' 추적 기록용
+let wrongIndexes = []; // 틀린 문항들의 원본 인덱스를 저장하는 배열
 
-// DOM 객체 가져오기
+// DOM 요소 매핑
 const startScreen = document.getElementById('start-screen');
 const quizScreen = document.getElementById('quiz-screen');
 const resultScreen = document.getElementById('result-screen');
@@ -89,7 +89,7 @@ const feedbackText = document.getElementById('feedback-text');
 const studyGuide = document.getElementById('study-guide');
 const wrongAnswersList = document.getElementById('wrong-answers-list');
 
-// 이벤트 리스너 연동
+// 이벤트 연결
 startBtn.addEventListener('click', () => startQuiz(false));
 restartBtn.addEventListener('click', () => startQuiz(false)); 
 reviewRetryBtn.addEventListener('click', () => startQuiz(true)); 
@@ -102,24 +102,16 @@ function startQuiz(isWrongOnly = false) {
     userAnswers = []; 
 
     if (isWrongOnlyMode) {
-        // '틀린 문제만 다시 풀기' 모드일 때
+        // 오답 노트 모드일 경우: 이전에 추출해 둔 wrongIndexes 기반으로 문제집 재구성
         let tempWrongSet = [];
-        let nextWrongIndexes = [];
-
-        // 원본 배열(allQuestions) 기준으로 이전 라운드에서 틀렸던 번호들만 모으기
-        if (wrongIndexes.length > 0) {
-            wrongIndexes.forEach(idx => {
-                tempWrongSet.push(allQuestions[idx]);
-                nextWrongIndexes.push(idx);
-            });
-        }
+        wrongIndexes.forEach(idx => {
+            tempWrongSet.push(allQuestions[idx]);
+        });
         activeQuestions = tempWrongSet;
-        // 다시 추적하기 위해 인덱스 배열 임시 유지
-        wrongIndexes = nextWrongIndexes;
     } else {
-        // '처음부터 다시 풀기' 혹은 최초 로드 모드일 때
+        // 처음부터 풀기 모드일 경우: 원본 10문제 전체 세팅
         activeQuestions = [...allQuestions];
-        wrongIndexes = []; // 오답 기록 초기화
+        wrongIndexes = [];
     }
 
     startScreen.classList.add('hide');
@@ -185,11 +177,12 @@ function showResult() {
     quizScreen.classList.add('hide');
     resultScreen.classList.remove('hide');
     
+    // 점수 백분율 계산
     const finalScore = Math.round((score / activeQuestions.length) * 100);
     scoreText.innerText = finalScore;
     
     if (isWrongOnlyMode) {
-        feedbackText.innerText = "틀린 문제 재도전 완료! 오답 개념이 확실히 잡혔는지 결과창을 통해 점검해 보세요.";
+        feedbackText.innerText = "오답 재도전이 끝났습니다! 힌트를 확인하고 다시 풀어보니 어땠나요? 실력이 쑥쑥 늘고 있어요!";
     } else {
         if (finalScore >= 80) {
             feedbackText.innerText = "훌륭합니다! 기초 실력이 아주 탄탄하네요. 2단원의 다채로운 세계 음식 이야기를 흥미롭게 공부할 준비가 끝났습니다!";
@@ -207,7 +200,7 @@ function showResult() {
 
     wrongAnswersList.innerHTML = ""; 
     let currentWrongCount = 0;
-    let newWrongIndexes = []; // 이번 회차에서 새로 발생한 오답의 원본 인덱스 저장소
+    let newWrongIndexes = []; // 이번 라운드에서 새로 틀린 문제들의 원본 인덱스 저장소
 
     activeQuestions.forEach((question, index) => {
         const uAns = userAnswers[index];
@@ -216,7 +209,7 @@ function showResult() {
         if (uAns !== cAns) {
             currentWrongCount++;
             
-            // 원본 문제 배열인 allQuestions 안에서 이 문제가 몇 번째였는지 정밀 매칭 추적
+            // 전 회차 모드에 따른 정확한 원본 문항 인덱스 추출
             let originalIndex = isWrongOnlyMode ? wrongIndexes[index] : index;
             newWrongIndexes.push(originalIndex);
 
@@ -224,26 +217,28 @@ function showResult() {
             wrongItem.classList.add('wrong-item');
             const formattedQuestion = question.question.split('\n').join('<br>');
 
+            // [수정 핵심]: 정답 노출 코드를 제거하고, 학생의 선택 오답과 힌트박스만 노출
             wrongItem.innerHTML = `
-                <div class="q-title">📌 문항 내역</div>
-                <div style="font-size:0.95rem; line-height:1.4; color:#555; margin-bottom:5px;">${formattedQuestion}</div>
+                <div class="q-title">📌 틀린 문항</div>
+                <div style="font-size:0.95rem; line-height:1.4; color:#555; margin-bottom:8px;">${formattedQuestion}</div>
                 <div class="answer-info">
-                    <span class="my-ans">❌ 내가 고른 답: ${question.options[uAns]}</span>
-                    <span style="color:#2ecc71; font-weight:bold;">⭕ 진짜 정답: ${question.options[cAns]}</span>
+                    <span class="my-ans">❌ 내가 고른 오답: ${question.options[uAns]}</span>
+                    <div class="review-hint">💡 힌트 코멘트: ${question.hint}</div>
                 </div>
             `;
             wrongAnswersList.appendChild(wrongItem);
         }
     });
 
-    // 다음 오답 재도전을 위해 오답 리스트 업데이트
+    // 다음 시도를 위해 오답 인덱스 목록 갱신
     wrongIndexes = newWrongIndexes;
 
+    // 틀린 문제가 하나라도 남아있다면 오답 전용 재도전 버튼을 보여줌
     if (currentWrongCount > 0) {
         reviewRetryBtn.classList.remove('hide');
-        reviewRetryBtn.innerText = `❌ 틀린 문제 (${currentWrongCount}개)만 다시 풀기`;
+        reviewRetryBtn.innerText = `❌ 틀린 문제 (${currentWrongCount}개) 다시 도전하기`;
     } else {
         reviewRetryBtn.classList.add('hide');
-        wrongAnswersList.innerHTML = `<div class="all-correct-msg">🎉 완벽합니다! 틀린 문제가 하나도 없습니다!</div>`;
+        wrongAnswersList.innerHTML = `<div class="all-correct-msg">🎉 완벽합니다! 모든 문제를 다 맞혔습니다!</div>`;
     }
 }
