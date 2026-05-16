@@ -83,7 +83,7 @@ p {
     background-color: var(--primary-hover);
 }
 
-/* 오답 재도전 전용 버튼 스타일 */
+/* 오답 재도전 버튼 */
 .retry-wrong-btn {
     background-color: var(--wrong-color);
     margin-top: 15px;
@@ -124,7 +124,7 @@ p {
     transition: width 0.3s ease;
 }
 
-/* 문제 텍스트 영역 (오타 수정 완료) */
+/* 문제 영역 */
 .question-text {
     font-size: 1.2rem;
     font-weight: bold;
@@ -180,7 +180,7 @@ p {
     border-color: #cbd5e0;
 }
 
-/* 결과 및 오답 리스트 양식 */
+/* 결과 및 오답 스타일 */
 .score-box {
     font-size: 3rem;
     font-weight: bold;
@@ -230,12 +230,21 @@ p {
     margin-top: 8px;
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 6px;
 }
 
 .wrong-item .my-ans {
     color: var(--wrong-color);
     font-weight: bold;
+}
+
+.wrong-item .review-hint {
+    color: #718096;
+    background-color: #f7fafc;
+    padding: 8px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    border-left: 3px solid var(--hint-color);
 }
 
 .all-correct-msg {
