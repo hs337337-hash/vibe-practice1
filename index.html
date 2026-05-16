@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>중1 영어 Lesson 2 진단평가</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="quiz-container">
+        <div id="start-screen" class="screen">
+            <h1>Lesson 2. A Delicious World</h1>
+            <h2>단원 진입 전 진단평가</h2>
+            <p>이 평가는 2단원을 배우기 전, 여러분이 이미 알고 있는 기초 내용을 점검하기 위한 퀴즈입니다. (총 10문항)</p>
+            <button id="start-btn" class="btn">평가 시작하기</button>
+        </div>
+
+        <div id="quiz-screen" class="screen hide">
+            <div class="quiz-header">
+                <span id="progress">문항 1 / 10</span>
+                <div class="progress-bar-container">
+                    <div id="progress-bar"></div>
+                </div>
+            </div>
+            <div id="question-text" class="question-text">질문 내용이 여기에 들어갑니다.</div>
+            <div id="hint-box" class="hint-box hide">💡 힌트: <span id="hint-text"></span></div>
+            <button id="hint-toggle-btn" class="hint-btn">힌트 보기</button>
+            <div id="options-container" class="options-container">
+                </div>
+        </div>
+
+        <div id="result-screen" class="screen hide">
+            <h1>진단평가 결과</h1>
+            <div class="score-box">
+                <span id="score-text">0</span> / 100점
+            </div>
+            <p id="feedback-text">결과 분석 메시지가 여기에 들어갑니다.</p>
+            <div class="review-container">
+                <h3>💡 단원 학습 가이드</h3>
+                <ul id="study-guide"></ul>
+            </div>
+            <button id="restart-btn" class="btn">다시 풀기</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
