@@ -1,72 +1,72 @@
-// 진단평가 문항 데이터 데이터베이스
+// 진단평가 문제 데이터베이스
 const questions = [
     {
         question: "다음 대화의 빈칸에 알맞은 단어는?\n\nA: How ______ is this apple?\nB: It's one dollar.",
         options: ["many", "much", "old", "long"],
-        answer: 1, // much
+        answer: 1, 
         hint: "물건의 가격(돈)을 물어볼 때 쓰는 의문사 세트입니다."
     },
     {
         question: "다음 단어 중 '음식 재료'에 해당하지 않는 단어는?",
         options: ["garlic", "bacon", "seafood", "tourist"],
-        answer: 3, // tourist
+        answer: 3, 
         hint: "마지막 단어는 '관광객, 여행객'이라는 뜻을 가지고 있습니다."
     },
     {
         question: "다음 문장의 빈칸에 들어갈 알맞은 말은?\n\nI'm ______ to buy some snacks.",
         options: ["go", "goes", "going", "went"],
-        answer: 2, // going
+        answer: 2, 
         hint: "~할 예정이다라는 가까운 미래의 계획이나 의도를 나타낼 때 쓰는 기본 표현입니다."
     },
     {
         question: "다음 대화에서 B가 지불해야 할 금액은?\n\nA: Banana chips are $2 a bag. How many bags do you want?\nB: Three bags, please.",
         options: ["$2", "$3", "$5", "$6"],
-        answer: 3, // $6
+        answer: 3, 
         hint: "한 봉지에 2달러인 바나나 칩을 3봉지 샀습니다. 곱셈을 해보세요!"
     },
     {
         question: "다음 중 '지금 일어나고 있는 행동(현재진행형)'을 바르게 나타낸 문장은?",
         options: ["I am watch a match.", "I watching a match.", "I am watching a match.", "I am watched a match."],
-        answer: 2, // I am watching a match.
+        answer: 2, 
         hint: "현재진행형은 [be동사(am/are/is) + 동사원형-ing]의 형태를 취합니다."
     },
     {
         question: "다음 중 단어의 뜻이 바르게 연결되지 않은 것은?",
         options: ["delicious - 맛있는", "celebrate - 축하하다/기념하다", "spicy - 달콤한", "harmony - 조화"],
-        answer: 2, // spicy
+        answer: 2, 
         hint: "떡볶이나 김치는 매운 음식입니다. 'spicy'의 진짜 뜻은 무엇일까요?"
     },
     {
         question: "문맥상 다음 빈칸에 가장 알맞은 단어는?\n\nPeople ______ different toppings to this pizza.",
         options: ["enjoy", "enjoys", "enjoyed", "to enjoy"],
-        answer: 0, // enjoy
+        answer: 0, 
         hint: "주어가 복수 명사(People)일 때, 현재 시제 동사의 알맞은 형태를 고르세요."
     },
     {
         question: "다음 질문에 대한 답변으로 가장 적절한 것은?\n\nQ: What food do you like?",
         options: ["I like kimchi fried rice.", "It's five dollars.", "I'm at the market.", "Yes, I am."],
-        answer: 0, // I like kimchi fried rice.
+        answer: 0, 
         hint: "상대방이 어떤 '음식'을 좋아하는지 물었으므로 좋아하는 음식 종류를 답해야 합니다."
     },
     {
         question: "영어 문장에서 여러 개의 단어를 나열할 때 문장 부호와 접속사(and)의 쓰임이 바른 것은?",
         options: ["noodles, garlic, and oil", "noodles garlic and oil", "noodles, garlic, oil", "noodles, and garlic, and oil"],
-        answer: 0, // noodles, garlic, and oil
+        answer: 0, 
         hint: "3개 이상의 요소를 나열할 때는 A, B, and C 형태로 씁니다."
     },
     {
         question: "다음 빈칸에 공통으로 들어갈 알파벳으로 알맞은 것은?\n\n• f l a _  pan\n• _ a s t a",
         options: ["p", "b", "m", "f"],
-        answer: 0, // p (flat, pasta)
+        answer: 0, 
         hint: "교과서에 나오는 '평평한 냄비(flat pan)'와 이탈리아 국수 요리 '파스타'에 들어갈 단어입니다."
     }
 ];
 
 let currentQuestionIndex = 0;
 let score = 0;
-let userAnswers = []; // 학생이 선택한 답을 저장하는 배열 추가
+let userAnswers = []; 
 
-// DOM 요소
+// DOM 요소 매핑
 const startScreen = document.getElementById('start-screen');
 const quizScreen = document.getElementById('quiz-screen');
 const resultScreen = document.getElementById('result-screen');
@@ -82,9 +82,9 @@ const hintText = document.getElementById('hint-text');
 const scoreText = document.getElementById('score-text');
 const feedbackText = document.getElementById('feedback-text');
 const studyGuide = document.getElementById('study-guide');
-const wrongAnswersList = document.getElementById('wrong-answers-list'); // 오답 리스트 DOM
+const wrongAnswersList = document.getElementById('wrong-answers-list');
 
-// 이벤트 리스너
+// 이벤트 바인딩
 startBtn.addEventListener('click', startQuiz);
 restartBtn.addEventListener('click', startQuiz);
 hintToggleBtn.addEventListener('click', toggleHint);
@@ -92,7 +92,7 @@ hintToggleBtn.addEventListener('click', toggleHint);
 function startQuiz() {
     currentQuestionIndex = 0;
     score = 0;
-    userAnswers = []; // 데이터 초기화
+    userAnswers = []; 
     startScreen.classList.add('hide');
     resultScreen.classList.add('hide');
     quizScreen.classList.remove('hide');
@@ -137,10 +137,8 @@ function toggleHint() {
 }
 
 function selectAnswer(selectedIndex) {
-    const currentQuestion = questions[currentQuestionIndex];
-    
-    // 학생이 선택한 답 번호 기억하기
     userAnswers.push(selectedIndex);
+    const currentQuestion = questions[currentQuestionIndex];
 
     if (selectedIndex === currentQuestion.answer) {
         score += 10;
@@ -159,7 +157,7 @@ function showResult() {
     resultScreen.classList.remove('hide');
     scoreText.innerText = score;
     
-    // 1. 피드백 및 단원 학습 가이드 출력
+    // 1. 점수대별 가이드 설정
     studyGuide.innerHTML = "";
     if (score >= 80) {
         feedbackText.innerText = "훌륭합니다! 기초 실력이 아주 탄탄하네요. 2단원의 다채로운 세계 음식 이야기를 흥미롭게 공부할 준비가 끝났습니다!";
@@ -181,33 +179,35 @@ function showResult() {
         `;
     }
 
-    // 2. 오답 노트 생성 기능 (몇 번이 틀렸고 정답이 뭔지 매칭)
-    wrongAnswersList.innerHTML = "";
+    // 2. 오답 내용 렌더링 검증 및 적용
+    wrongAnswersList.innerHTML = ""; 
     let wrongCount = 0;
 
     questions.forEach((question, index) => {
         const uAns = userAnswers[index];
         const cAns = question.answer;
 
-        // 학생이 선택한 답과 실제 정답이 다른 경우 (틀린 문제만 추출)
         if (uAns !== cAns) {
             wrongCount++;
             const wrongItem = document.createElement('div');
             wrongItem.classList.add('wrong-item');
 
+            // 문자열 안전 치환 처리
+            const formattedQuestion = question.question.split('\n').join('<br>');
+
             wrongItem.innerHTML = `
-                <div class="q-title">📌 Q${index + 1}. ${question.question.replace(/\n/g, '<br>')}</div>
+                <div class="q-title">📌 문항 ${index + 1}</div>
+                <div class="question-text" style="font-size:1rem; margin-bottom:10px;">${formattedQuestion}</div>
                 <div class="answer-info">
                     <span class="my-ans">❌ 내가 고른 답: ${question.options[uAns]}</span>
-                    <span class="correct-ans">⭕ 정답: ${question.options[cAns]}</span>
+                    <span class="correct-ans">⭕ 바른 정답: ${question.options[cAns]}</span>
                 </div>
             `;
             wrongAnswersList.appendChild(wrongItem);
         }
     });
 
-    // 다 맞았을 경우 예외 처리
     if (wrongCount === 0) {
-        wrongAnswersList.innerHTML = `<div class="all-correct-msg">🎉 와우! 틀린 문제가 하나도 없습니다! 완벽해요!</div>`;
+        wrongAnswersList.innerHTML = `<div class="all-correct-msg">🎉 완벽합니다! 모든 문제를 다 맞혔습니다!</div>`;
     }
 }
