@@ -1,246 +1,249 @@
-:root {
-    --primary-color: #4a90e2;
-    --primary-hover: #357abd;
-    --bg-color: #f5f7fa;
-    --card-bg: #ffffff;
-    --text-color: #333333;
-    --hint-color: #f5a623;
-    --correct-color: #2ecc71;
-    --wrong-color: #e74c3c;
-    --border-radius: 12px;
+// 전체 질문 풀세트 데이터 보존
+const allQuestions = [
+    {
+        question: "다음 대화의 빈칸에 알맞은 단어는?\n\nA: How ______ is this apple?\nB: It's one dollar.",
+        options: ["many", "much", "old", "long"],
+        answer: 1, 
+        hint: "물건의 가격(돈)을 물어볼 때 쓰는 의문사 세트입니다."
+    },
+    {
+        question: "다음 단어 중 '음식 재료'에 해당하지 않는 단어는?",
+        options: ["garlic", "bacon", "seafood", "tourist"],
+        answer: 3, 
+        hint: "마지막 단어는 '관광객, 여행객'이라는 뜻을 가지고 있습니다."
+    },
+    {
+        question: "다음 문장의 빈칸에 들어갈 알맞은 말은?\n\nI'm ______ to buy some snacks.",
+        options: ["go", "goes", "going", "went"],
+        answer: 2, 
+        hint: "~할 예정이다라는 가까운 미래의 계획이나 의도를 나타낼 때 쓰는 기본 표현입니다."
+    },
+    {
+        question: "다음 대화에서 B가 지불해야 할 금액은?\n\nA: Banana chips are $2 a bag. How many bags do you want?\nB: Three bags, please.",
+        options: ["$2", "$3", "$5", "$6"],
+        answer: 3, 
+        hint: "한 봉지에 2달러인 바나나 칩을 3봉지 샀습니다. 곱셈을 해보세요!"
+    },
+    {
+        question: "다음 중 '지금 일어나고 있는 행동(현재진행형)'을 바르게 나타낸 문장은?",
+        options: ["I am watch a match.", "I watching a match.", "I am watching a match.", "I am watched a match."],
+        answer: 2, 
+        hint: "현재진행형은 [be동사(am/are/is) + 동사원형-ing]의 형태를 취합니다."
+    },
+    {
+        question: "다음 중 단어의 뜻이 바르게 연결되지 않은 것은?",
+        options: ["delicious - 맛있는", "celebrate - 축하하다/기념하다", "spicy - 달콤한", "harmony - 조화"],
+        answer: 2, 
+        hint: "떡볶이나 김치는 매운 음식입니다. 'spicy'의 진짜 뜻은 무엇일까요?"
+    },
+    {
+        question: "문맥상 다음 빈칸에 가장 알맞은 단어는?\n\nPeople ______ different toppings to this pizza.",
+        options: ["enjoy", "enjoys", "enjoyed", "to enjoy"],
+        answer: 0, 
+        hint: "주어가 복수 명사(People)일 때, 현재 시제 동사의 알맞은 형태를 고르세요."
+    },
+    {
+        question: "다음 질문에 대한 답변으로 가장 적절한 것은?\n\nQ: What food do you like?",
+        options: ["I like kimchi fried rice.", "It's five dollars.", "I'm at the market.", "Yes, I am."],
+        answer: 0, 
+        hint: "상대방이 어떤 '음식'을 좋아하는지 물었으므로 좋아하는 음식 종류를 답해야 합니다."
+    },
+    {
+        question: "영어 문장에서 여러 개의 단어를 나열할 때 문장 부호와 접속사(and)의 쓰임이 바른 것은?",
+        options: ["noodles, garlic, and oil", "noodles garlic and oil", "noodles, garlic, oil", "noodles, and garlic, and oil"],
+        answer: 0, 
+        hint: "3개 이상의 요소를 나열할 때는 A, B, and C 형태로 씁니다."
+    },
+    {
+        question: "다음 빈칸에 공통으로 들어갈 알파벳으로 알맞은 것은?\n\n• f l a _  pan\n• _ a s t a",
+        options: ["p", "b", "m", "f"],
+        answer: 0, 
+        hint: "교과서에 나오는 '평평한 냄비(flat pan)'와 이탈리아 국수 요리 '파스타'에 들어갈 단어입니다."
+    }
+];
+
+// 퀴즈 제어 상태 변수들
+let activeQuestions = []; 
+let currentQuestionIndex = 0;
+let score = 0;
+let userAnswers = []; 
+let isWrongOnlyMode = false;
+let wrongIndexes = []; // 원본 풀세트 중 '어떤 인덱스의 문제를 틀렸었는지' 추적 기록용
+
+// DOM 객체 가져오기
+const startScreen = document.getElementById('start-screen');
+const quizScreen = document.getElementById('quiz-screen');
+const resultScreen = document.getElementById('result-screen');
+const startBtn = document.getElementById('start-btn');
+const restartBtn = document.getElementById('restart-btn');
+const reviewRetryBtn = document.getElementById('review-retry-btn'); 
+const questionText = document.getElementById('question-text');
+const optionsContainer = document.getElementById('options-container');
+const progressText = document.getElementById('progress');
+const progressBar = document.getElementById('progress-bar');
+const hintToggleBtn = document.getElementById('hint-toggle-btn');
+const hintBox = document.getElementById('hint-box');
+const hintText = document.getElementById('hint-text');
+const scoreText = document.getElementById('score-text');
+const feedbackText = document.getElementById('feedback-text');
+const studyGuide = document.getElementById('study-guide');
+const wrongAnswersList = document.getElementById('wrong-answers-list');
+
+// 이벤트 리스너 연동
+startBtn.addEventListener('click', () => startQuiz(false));
+restartBtn.addEventListener('click', () => startQuiz(false)); 
+reviewRetryBtn.addEventListener('click', () => startQuiz(true)); 
+hintToggleBtn.addEventListener('click', toggleHint);
+
+function startQuiz(isWrongOnly = false) {
+    currentQuestionIndex = 0;
+    score = 0;
+    isWrongOnlyMode = isWrongOnly;
+    userAnswers = []; 
+
+    if (isWrongOnlyMode) {
+        // '틀린 문제만 다시 풀기' 모드일 때
+        let tempWrongSet = [];
+        let nextWrongIndexes = [];
+
+        // 원본 배열(allQuestions) 기준으로 이전 라운드에서 틀렸던 번호들만 모으기
+        if (wrongIndexes.length > 0) {
+            wrongIndexes.forEach(idx => {
+                tempWrongSet.push(allQuestions[idx]);
+                nextWrongIndexes.push(idx);
+            });
+        }
+        activeQuestions = tempWrongSet;
+        // 다시 추적하기 위해 인덱스 배열 임시 유지
+        wrongIndexes = nextWrongIndexes;
+    } else {
+        // '처음부터 다시 풀기' 혹은 최초 로드 모드일 때
+        activeQuestions = [...allQuestions];
+        wrongIndexes = []; // 오답 기록 초기화
+    }
+
+    startScreen.classList.add('hide');
+    resultScreen.classList.add('hide');
+    quizScreen.classList.remove('hide');
+    showQuestion();
 }
 
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;
+function showQuestion() {
+    resetState();
+    let currentQuestion = activeQuestions[currentQuestionIndex];
+    
+    progressText.innerText = `문항 ${currentQuestionIndex + 1} / ${activeQuestions.length}`;
+    progressBar.style.width = `${((currentQuestionIndex + 1) / activeQuestions.length) * 100}%`;
+    
+    questionText.innerText = currentQuestion.question;
+    hintText.innerText = currentQuestion.hint;
+    
+    currentQuestion.options.forEach((option, index) => {
+        const button = document.createElement('button');
+        button.innerText = option;
+        button.classList.add('option-btn');
+        button.addEventListener('click', () => selectAnswer(index));
+        optionsContainer.appendChild(button);
+    });
 }
 
-body {
-    background-color: var(--bg-color);
-    color: var(--text-color);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    padding: 20px;
+function resetState() {
+    hintBox.classList.add('hide');
+    hintToggleBtn.innerText = "힌트 보기";
+    while (optionsContainer.firstChild) {
+        optionsContainer.removeChild(optionsContainer.firstChild);
+    }
 }
 
-.quiz-container {
-    background-color: var(--card-bg);
-    border-radius: var(--border-radius);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-    width: 100%;
-    max-width: 600px;
-    padding: 30px;
+function toggleHint() {
+    if (hintBox.classList.contains('hide')) {
+        hintBox.classList.remove('hide');
+        hintToggleBtn.innerText = "힌트 숨기기";
+    } else {
+        hintBox.classList.add('hide');
+        hintToggleBtn.innerText = "힌트 보기";
+    }
 }
 
-.screen {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
+function selectAnswer(selectedIndex) {
+    userAnswers.push(selectedIndex);
+    const currentQuestion = activeQuestions[currentQuestionIndex];
+
+    if (selectedIndex === currentQuestion.answer) {
+        score++;
+    }
+    
+    currentQuestionIndex++;
+    if (currentQuestionIndex < activeQuestions.length) {
+        showQuestion();
+    } else {
+        showResult();
+    }
 }
 
-.hide {
-    display: none !important;
-}
+function showResult() {
+    quizScreen.classList.add('hide');
+    resultScreen.classList.remove('hide');
+    
+    const finalScore = Math.round((score / activeQuestions.length) * 100);
+    scoreText.innerText = finalScore;
+    
+    if (isWrongOnlyMode) {
+        feedbackText.innerText = "틀린 문제 재도전 완료! 오답 개념이 확실히 잡혔는지 결과창을 통해 점검해 보세요.";
+    } else {
+        if (finalScore >= 80) {
+            feedbackText.innerText = "훌륭합니다! 기초 실력이 아주 탄탄하네요. 2단원의 다채로운 세계 음식 이야기를 흥미롭게 공부할 준비가 끝났습니다!";
+        } else if (finalScore >= 50) {
+            feedbackText.innerText = "좋습니다! 기본적인 어휘와 대화 표현을 잘 기억하고 있네요. 몇 가지 부족한 어법 규칙을 보완하면 수업을 더 잘 따라갈 수 있어요.";
+        } else {
+            feedbackText.innerText = "기초 단어와 문장 구조에 대한 복습이 필요합니다. 선생님, 친구들과 함께 차근차근 공부하면 금방 실력을 키울 수 있으니 걱정 마세요!";
+        }
+    }
 
-h1 {
-    font-size: 1.8rem;
-    color: var(--primary-color);
-    margin-bottom: 10px;
-}
+    studyGuide.innerHTML = `
+        <li><strong>How much is it? / It is ~ dollars.</strong> 가격 묻고 답하기 대화를 짝과 소리 내어 연습해보세요.</li>
+        <li><strong>be동사 + 동사원형-ing</strong> 형태의 현재진행형 문장을 만드는 법을 교과서 Grammar 코너에서 미리 복습하세요.</li>
+    `;
 
-h2 {
-    font-size: 1.4rem;
-    margin-bottom: 20px;
-    color: #555;
-}
+    wrongAnswersList.innerHTML = ""; 
+    let currentWrongCount = 0;
+    let newWrongIndexes = []; // 이번 회차에서 새로 발생한 오답의 원본 인덱스 저장소
 
-p {
-    font-size: 1rem;
-    line-height: 1.6;
-    margin-bottom: 25px;
-    color: #666;
-}
+    activeQuestions.forEach((question, index) => {
+        const uAns = userAnswers[index];
+        const cAns = question.answer;
 
-.btn {
-    background-color: var(--primary-color);
-    color: white;
-    border: none;
-    padding: 14px 30px;
-    font-size: 1.1rem;
-    font-weight: bold;
-    border-radius: var(--border-radius);
-    cursor: pointer;
-    transition: background-color 0.2s;
-    width: 100%;
-}
+        if (uAns !== cAns) {
+            currentWrongCount++;
+            
+            // 원본 문제 배열인 allQuestions 안에서 이 문제가 몇 번째였는지 정밀 매칭 추적
+            let originalIndex = isWrongOnlyMode ? wrongIndexes[index] : index;
+            newWrongIndexes.push(originalIndex);
 
-.btn:hover {
-    background-color: var(--primary-hover);
-}
+            const wrongItem = document.createElement('div');
+            wrongItem.classList.add('wrong-item');
+            const formattedQuestion = question.question.split('\n').join('<br>');
 
-/* 틀린 문제 풀기 전용 강렬한 빨간색 버튼 */
-.retry-wrong-btn {
-    background-color: var(--wrong-color);
-    margin-top: 15px;
-}
+            wrongItem.innerHTML = `
+                <div class="q-title">📌 문항 내역</div>
+                <div style="font-size:0.95rem; line-height:1.4; color:#555; margin-bottom:5px;">${formattedQuestion}</div>
+                <div class="answer-info">
+                    <span class="my-ans">❌ 내가 고른 답: ${question.options[uAns]}</span>
+                    <span style="color:#2ecc71; font-weight:bold;">⭕ 진짜 정답: ${question.options[cAns]}</span>
+                </div>
+            `;
+            wrongAnswersList.appendChild(wrongItem);
+        }
+    });
 
-.retry-wrong-btn:hover {
-    background-color: #c0392b;
-}
+    // 다음 오답 재도전을 위해 오답 리스트 업데이트
+    wrongIndexes = newWrongIndexes;
 
-/* 상단 진행 바 */
-.quiz-header {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    margin-bottom: 20px;
-}
-
-#progress {
-    font-size: 0.9rem;
-    font-weight: bold;
-    color: #888;
-    margin-bottom: 5px;
-}
-
-.progress-bar-container {
-    width: 100%;
-    height: 8px;
-    background-color: #e0e0e0;
-    border-radius: 4px;
-    overflow: hidden;
-}
-
-#progress-bar {
-    height: 100%;
-    width: 0%;
-    background-color: var(--primary-color);
-    transition: width 0.3s ease;
-}
-
-/* 문제 및 버튼 영역 */
-.question-text {
-    font-size: 1.2rem;
-    font-weight: bold;
-    line-6height: 1.6;
-    margin-bottom: 20px;
-    text-align: left;
-    width: 100%;
-    white-space: pre-line;
-}
-
-.hint-btn {
-    background: none;
-    border: 1px solid var(--hint-color);
-    color: var(--hint-color);
-    padding: 6px 14px;
-    font-size: 0.85rem;
-    border-radius: 20px;
-    cursor: pointer;
-    margin-bottom: 15px;
-    align-self: flex-start;
-}
-
-.hint-box {
-    width: 100%;
-    background-color: #fffdf3;
-    border-left: 4px solid var(--hint-color);
-    padding: 12px;
-    text-align: left;
-    font-size: 0.9rem;
-    margin-bottom: 20px;
-}
-
-.options-container {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.option-btn {
-    background-color: #f8f9fa;
-    border: 2px solid #e9ecef;
-    padding: 14px 20px;
-    font-size: 1rem;
-    text-align: left;
-    border-radius: var(--border-radius);
-    cursor: pointer;
-    transition: all 0.2s;
-}
-
-.option-btn:hover {
-    background-color: #edf2f7;
-    border-color: #cbd5e0;
-}
-
-/* 결과창 및 오답 목록 */
-.score-box {
-    font-size: 3rem;
-    font-weight: bold;
-    color: var(--primary-color);
-    margin: 15px 0;
-}
-
-.review-container, .wrong-answers-container {
-    width: 100%;
-    background-color: #f8f9fa;
-    border-radius: var(--border-radius);
-    padding: 20px;
-    margin-bottom: 20px;
-    text-align: left;
-}
-
-.review-container h3, .wrong-answers-container h3 {
-    margin-bottom: 12px;
-    color: #444;
-    border-bottom: 1px solid #e9ecef;
-    padding-bottom: 5px;
-}
-
-.review-container ul {
-    padding-left: 20px;
-    line-height: 1.8;
-    font-size: 0.95rem;
-    color: #555;
-}
-
-.wrong-item {
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
-    border-radius: 8px;
-    padding: 15px;
-    margin-top: 12px;
-}
-
-.wrong-item .q-title {
-    font-weight: bold;
-    margin-bottom: 8px;
-    color: #e74c3c;
-}
-
-.wrong-item .answer-info {
-    font-size: 0.95rem;
-    margin-top: 8px;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
-.wrong-item .my-ans {
-    color: var(--wrong-color);
-    font-weight: bold;
-}
-
-.all-correct-msg {
-    color: var(--correct-color);
-    font-weight: bold;
-    text-align: center;
-    padding: 15px 0;
+    if (currentWrongCount > 0) {
+        reviewRetryBtn.classList.remove('hide');
+        reviewRetryBtn.innerText = `❌ 틀린 문제 (${currentWrongCount}개)만 다시 풀기`;
+    } else {
+        reviewRetryBtn.classList.add('hide');
+        wrongAnswersList.innerHTML = `<div class="all-correct-msg">🎉 완벽합니다! 틀린 문제가 하나도 없습니다!</div>`;
+    }
 }
