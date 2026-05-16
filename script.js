@@ -83,7 +83,17 @@ p {
     background-color: var(--primary-hover);
 }
 
-/* 상단 프로그레스 바 */
+/* 틀린 문제 풀기 전용 강렬한 빨간색 버튼 */
+.retry-wrong-btn {
+    background-color: var(--wrong-color);
+    margin-top: 15px;
+}
+
+.retry-wrong-btn:hover {
+    background-color: #c0392b;
+}
+
+/* 상단 진행 바 */
 .quiz-header {
     width: 100%;
     display: flex;
@@ -118,7 +128,7 @@ p {
 .question-text {
     font-size: 1.2rem;
     font-weight: bold;
-    line-height: 1.6;
+    line-6height: 1.6;
     margin-bottom: 20px;
     text-align: left;
     width: 100%;
@@ -170,7 +180,7 @@ p {
     border-color: #cbd5e0;
 }
 
-/* 결과 및 오답 스타일 */
+/* 결과창 및 오답 목록 */
 .score-box {
     font-size: 3rem;
     font-weight: bold;
@@ -201,10 +211,6 @@ p {
     color: #555;
 }
 
-#wrong-answers-list {
-    width: 100%;
-}
-
 .wrong-item {
     background: #ffffff;
     border: 1px solid #e2e8f0;
@@ -215,26 +221,20 @@ p {
 
 .wrong-item .q-title {
     font-weight: bold;
-    margin-bottom: 10px;
-    color: #333;
-    white-space: pre-line;
-    line-height: 1.5;
+    margin-bottom: 8px;
+    color: #e74c3c;
 }
 
 .wrong-item .answer-info {
     font-size: 0.95rem;
+    margin-top: 8px;
     display: flex;
     flex-direction: column;
-    gap: 5px;
+    gap: 4px;
 }
 
 .wrong-item .my-ans {
     color: var(--wrong-color);
-    font-weight: bold;
-}
-
-.wrong-item .correct-ans {
-    color: var(--correct-color);
     font-weight: bold;
 }
 
