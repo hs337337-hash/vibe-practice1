@@ -34,7 +34,6 @@ body {
     width: 100%;
     max-width: 600px;
     padding: 30px;
-    transition: all 0.3s ease;
 }
 
 .screen {
@@ -71,7 +70,7 @@ p {
     background-color: var(--primary-color);
     color: white;
     border: none;
-    padding: 12px 30px;
+    padding: 14px 30px;
     font-size: 1.1rem;
     font-weight: bold;
     border-radius: var(--border-radius);
@@ -84,7 +83,7 @@ p {
     background-color: var(--primary-hover);
 }
 
-/* 퀴즈 상단 진행 바 */
+/* 상단 프로그레스 바 */
 .quiz-header {
     width: 100%;
     display: flex;
@@ -110,16 +109,16 @@ p {
 
 #progress-bar {
     height: 100%;
-    width: 10%;
+    width: 0%;
     background-color: var(--primary-color);
     transition: width 0.3s ease;
 }
 
-/* 문제 및 선택지 */
+/* 문제 및 버튼 영역 */
 .question-text {
-    font-size: 1.25rem;
+    font-size: 1.2rem;
     font-weight: bold;
-    line-height: 1.5;
+    line-height: 1.6;
     margin-bottom: 20px;
     text-align: left;
     width: 100%;
@@ -130,7 +129,7 @@ p {
     background: none;
     border: 1px solid var(--hint-color);
     color: var(--hint-color);
-    padding: 5px 12px;
+    padding: 6px 14px;
     font-size: 0.85rem;
     border-radius: 20px;
     cursor: pointer;
@@ -146,7 +145,6 @@ p {
     text-align: left;
     font-size: 0.9rem;
     margin-bottom: 20px;
-    border-radius: 0 var(--border-radius) var(--border-radius) 0;
 }
 
 .options-container {
@@ -172,7 +170,7 @@ p {
     border-color: #cbd5e0;
 }
 
-/* 결과 및 피드백 */
+/* 결과 및 오답 스타일 */
 .score-box {
     font-size: 3rem;
     font-weight: bold;
@@ -203,31 +201,36 @@ p {
     color: #555;
 }
 
-/* 오답 노트 스타일 디자인 */
+#wrong-answers-list {
+    width: 100%;
+}
+
 .wrong-item {
     background: #ffffff;
     border: 1px solid #e2e8f0;
     border-radius: 8px;
     padding: 15px;
-    margin-bottom: 15px;
+    margin-top: 12px;
 }
 
 .wrong-item .q-title {
     font-weight: bold;
-    margin-bottom: 8px;
+    margin-bottom: 10px;
     color: #333;
     white-space: pre-line;
+    line-height: 1.5;
 }
 
 .wrong-item .answer-info {
     font-size: 0.95rem;
-    margin-top: 5px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
 }
 
 .wrong-item .my-ans {
     color: var(--wrong-color);
     font-weight: bold;
-    margin-right: 15px;
 }
 
 .wrong-item .correct-ans {
@@ -239,5 +242,5 @@ p {
     color: var(--correct-color);
     font-weight: bold;
     text-align: center;
-    padding: 10px 0;
+    padding: 15px 0;
 }
